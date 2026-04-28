@@ -1,2 +1,10 @@
 Getting started:
-How to use this tool? First things first you need to get all the poper packages to make the code function. The Python Modules are located at a "requirements.txt"
+How does the tool function and how to use this it?
+First things first you need to get all the poper packages to make the code function. The Python Modules are located at a "requirements.txt"
+after the Modules are installed run the code by doing: python "c:/ Path -> File" 26 3 3 --attempts 15
+what does the code do? The "26" is the amount of packets to pack in the container,
+the first "3" is the amount of sides this packet has. 
+And the second "3" is the amount of sides the container has.
+and "15" is the amount of attemps for it will try to solve it in, each optimizing the last.
+For my personal Record-Run the terminal input was: python "c:/ Path -> File" import numpy as np.py" 26 3 3 --attempts 500 
+(Though this to a extensive amount of time).
