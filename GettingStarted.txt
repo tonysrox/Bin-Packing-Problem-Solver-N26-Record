@@ -1,2 +1,2 @@
 Getting started:
-How to use this tool?
+How to use this tool? First things first you need to get all the poper packages to make the code function. The Python Modules are located at a "requirements.txt"
