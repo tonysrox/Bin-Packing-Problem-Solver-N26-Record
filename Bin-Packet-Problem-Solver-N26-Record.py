@@ -7,7 +7,7 @@ import argparse
 import sys
 import os
 
-# Set system priority for high-performance calculation
+
 if sys.platform == 'win32':
     try:
         import psutil
@@ -17,7 +17,7 @@ if sys.platform == 'win32':
     except ImportError:
         print("system priority normal")
 
-# --- ARGUMENT PARSING ---
+
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument("N", type=int, help="Number of inner polygons (e.g., 26)")
 arg_parser.add_argument("nsi", type=int, help="Sides of inner polygons (3=tri, 4=square)")
@@ -29,7 +29,7 @@ N = args.N
 nsi = args.nsi
 nsc = args.nsc
 
-# --- GEOMETRY SETUP ---
+
 unit_angles = np.linspace(0, 2 * np.pi, nsi, endpoint=False)
 unit_vertices = np.column_stack((np.cos(unit_angles), np.sin(unit_angles)))
 unit_normals = np.column_stack((np.cos(unit_angles + np.pi/nsi), np.sin(unit_angles + np.pi/nsi)))
@@ -136,17 +136,11 @@ def run_attempt(seed):
             failed_attempts = 0 
     return best_S, best_x
 
-# --- MAIN EXECUTION ---
 if __name__ == "__main__":
     print(f"Starting packing problem solver for N={N}...")
-    
-    # Run the parallel attempts
     results = Parallel(n_jobs=-1)(delayed(run_attempt)(i) for i in range(args.attempts))
-    
-    # Find the best result from all parallel runs
     best_S, best_vals = min(results, key=lambda x: x[0])
-    
-    # Calculate final side length 's'
+
     final_s = best_S * np.sin(np.pi / nsc) / np.sin(np.pi / nsi) 
 
     print("\n" + "="*45)
@@ -154,7 +148,6 @@ if __name__ == "__main__":
     print(f"Best Side Length (s): {final_s:.10f}")
     print("="*45)
 
-    # --- PLOTTING ---
     fig, ax = ppt.subplots(figsize=(10,10))
     c_v = unit_vertices * best_S
     ax.plot(np.append(c_v[:,0], c_v[0,0]), np.append(c_v[:,1], c_v[0,1]), 'r-', lw=3)
