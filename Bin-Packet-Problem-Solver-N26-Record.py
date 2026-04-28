@@ -7,7 +7,7 @@ import argparse
 import sys
 import os
 
-
+# Set system priority for high-performance calculation
 if sys.platform == 'win32':
     try:
         import psutil
@@ -16,21 +16,27 @@ if sys.platform == 'win32':
         print("system priority high")
     except ImportError:
         print("system priority normal")
+
+# --- ARGUMENT PARSING ---
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument("N", type=int, help="Number of inner polygons (e.g., 26)")
 arg_parser.add_argument("nsi", type=int, help="Sides of inner polygons (3=tri, 4=square)")
 arg_parser.add_argument("nsc", type=int, help="Sides of container (3=tri, 4=square)")
 arg_parser.add_argument("--attempts", type=int, default=20, help="Parallel attempts")
 args = arg_parser.parse_args()
+
 N = args.N
 nsi = args.nsi
 nsc = args.nsc
+
+# --- GEOMETRY SETUP ---
 unit_angles = np.linspace(0, 2 * np.pi, nsi, endpoint=False)
 unit_vertices = np.column_stack((np.cos(unit_angles), np.sin(unit_angles)))
 unit_normals = np.column_stack((np.cos(unit_angles + np.pi/nsi), np.sin(unit_angles + np.pi/nsi)))
 cont_angles = np.linspace(0, 2 * np.pi, nsc, endpoint=False)
 cont_normals = np.column_stack((np.cos(cont_angles + np.pi/nsc), np.sin(cont_angles + np.pi/nsc)))
 cont_apothem = np.cos(np.pi / nsc)
+
 @njit(cache=True)
 def calculate_penalty(values, S):
     penalty = 0.0
@@ -47,13 +53,11 @@ def calculate_penalty(values, S):
             ty = y + (vx * s + vy * c)
             polys[i, v, 0], polys[i, v, 1] = tx, ty
             
-          
             for k in range(nsc):
                 dist = tx * cont_normals[k, 0] + ty * cont_normals[k, 1]
                 if dist > limit:
                     penalty += (dist - limit)**2
         
-  
         for v in range(nsi):
             nx, ny = unit_normals[v, 0], unit_normals[v, 1]
             norms[i, v, 0] = nx * c - ny * s
@@ -97,12 +101,9 @@ def calculate_penalty(values, S):
 
 def run_attempt(seed):
     np.random.seed(seed)
-    
-   
     current_S = 5.408
     step_down = 0.99995 
     
-   
     x0 = np.random.uniform(-0.5, 0.5, N * 3)
     x0[0::3] *= (current_S * 0.8)
     x0[1::3] *= (current_S * 0.8)
@@ -110,12 +111,10 @@ def run_attempt(seed):
     
     best_x, best_S = x0.copy(), current_S
 
-   
     bh = basinhopping(calculate_penalty, x0, niter=100, T=0.1, 
                       minimizer_kwargs={"args": (current_S,), "method": "L-BFGS-B", "tol": 1e-9})
     x0 = bh.x
 
-   
     failed_attempts = 0
     for i in range(400):
         res = minimize(calculate_penalty, x0, args=(current_S,), 
@@ -128,26 +127,34 @@ def run_attempt(seed):
             failed_attempts = 0
         else:
             failed_attempts += 1
-       
             x0 = best_x + np.random.normal(0, 0.005, N * 3) 
             
         if failed_attempts > 5:
-                bh_refined = basinhopping(calculate_penalty, x0, niter=15, T=0.02,
-                                          minimizer_kwargs={"args": (current_S,), "method": "L-BFGS-B", "tol": 1e-10})
-                x0 = bh_refined.x
-                failed_attempts = 0 
+            bh_refined = basinhopping(calculate_penalty, x0, niter=15, T=0.02,
+                                      minimizer_kwargs={"args": (current_S,), "method": "L-BFGS-B", "tol": 1e-10})
+            x0 = bh_refined.x
+            failed_attempts = 0 
     return best_S, best_x
+
+# --- MAIN EXECUTION ---
 if __name__ == "__main__":
-    print(f"starting packing problem solver for N={N} (Container={nsc}-gon)")
+    print(f"Starting packing problem solver for N={N}...")
+    
+    # Run the parallel attempts
     results = Parallel(n_jobs=-1)(delayed(run_attempt)(i) for i in range(args.attempts))
+    
+    # Find the best result from all parallel runs
     best_S, best_vals = min(results, key=lambda x: x[0])
+    
+    # Calculate final side length 's'
     final_s = best_S * np.sin(np.pi / nsc) / np.sin(np.pi / nsi) 
+
     print("\n" + "="*45)
     print(f"RESULTS FOR N={N}")
-    print(f"Best Side Length (s): {final_s:.7f}")
-    print(f"Target Record: ~5.4080000")
+    print(f"Best Side Length (s): {final_s:.10f}")
     print("="*45)
-    np.savetxt(f"N{N}_best_coordinates.txt", best_vals)
+
+    # --- PLOTTING ---
     fig, ax = ppt.subplots(figsize=(10,10))
     c_v = unit_vertices * best_S
     ax.plot(np.append(c_v[:,0], c_v[0,0]), np.append(c_v[:,1], c_v[0,1]), 'r-', lw=3)
@@ -158,7 +165,22 @@ if __name__ == "__main__":
         ax.fill(p[:,0], p[:,1], alpha=0.7, edgecolor='black', facecolor='#1f77b4', linewidth=1.5)
     
     ax.set_aspect('equal')
-    ppt.title(f"High-Density Packing N={N} | Final s={final_s:.6f}")
     ppt.axis('off')
     ppt.savefig(f"N{N}_record_attempt.png", dpi=300, bbox_inches='tight')
-    print(f"Saved high-resolution image to N{N}_record_attempt.png")
+    submission_filename = f"N{N}_submission_data.txt"
+    with open(submission_filename, "w") as f:
+        f.write(f"RECORD SUBMISSION: N={N} Triangles in Triangle\n")
+        f.write(f"Found by: [YOUR NAME]\n")
+        f.write(f"Method: Basinhopping + L-BFGS-B (Numba Accelerated)\n")
+        f.write(f"Container Side Length (s): {final_s:.12f}\n")
+        f.write("-" * 50 + "\n")
+        f.write("Format: Triangle index | x-center | y-center | rotation(rad)\n")
+        f.write("-" * 50 + "\n")
+        
+        for i in range(N):
+            x, y, a = best_vals[i*3 : i*3+3]
+            f.write(f"{i+1:2d} | {x:14.10f} | {y:14.10f} | {a:14.10f}\n")
+
+    print(f"\n[SUCCESS]")
+    print(f"1. Coordinate data saved to: {submission_filename}")
+    print(f"2. Plot image saved to: N{N}_record_attempt.png")
