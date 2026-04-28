@@ -1,0 +1,8 @@
+Python Modules: 
+To install these just type pip install (packet), to install these.
+numpy
+scipy
+matplotlib
+numba
+joblib
+shapely
