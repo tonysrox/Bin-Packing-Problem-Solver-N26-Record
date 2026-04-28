@@ -58,4 +58,4 @@ Format: Triangle index | x-center | y-center | rotation(rad)
 25 |   0.7965520215 |   2.0838353882 |   6.2828909184
 26 |   0.5204527977 |  -0.5434164566 |   2.5546858461
 
-
+Note: To get the code you can either "Git" the Repo or directly download the source code.
