@@ -1,10 +1,61 @@
 Getting started:
 How does the tool function and how to use this it?
+
 First things first you need to get all the poper packages to make the code function. The Python Modules are located at a "requirements.txt"
 after the Modules are installed run the code by doing: python "c:/ Path -> File" 26 3 3 --attempts 15
+
 what does the code do? The "26" is the amount of packets to pack in the container,
 the first "3" is the amount of sides this packet has. 
 And the second "3" is the amount of sides the container has.
 and "15" is the amount of attemps for it will try to solve it in, each optimizing the last.
 For my personal Record-Run the terminal input was: python "c:/ Path -> File" import numpy as np.py" 26 3 3 --attempts 500 
 (Though this to a extensive amount of time).
+
+After the code has run it will make 3 new files:
+
+1. The ".Png" file of the packets in the container.
+2. A ".Txt" file with the cordinates.
+3. A ".Txt" file with the submission data.
+
+it might look something like this:
+
+3.406377507099419333e+00
+3.364767871910970891e-07  
+
+And this:
+
+RECORD SUBMISSION: N=26 Triangles in Triangle
+Found by: name
+Method: Basinhopping + L-BFGS-B (Numba Accelerated)
+Container Side Length (s): 5.406377802786
+--------------------------------------------------
+Format: Triangle index | x-center | y-center | rotation(rad)
+--------------------------------------------------
+ 1 |   3.4063775071 |   0.0000003365 |   1.0471978236
+ 2 |   1.9063775244 |  -0.8660252726 |   1.0471975162
+ 3 |  -0.2036810535 |   2.0836749296 |   1.0471724488
+ 4 |   1.4063775273 |  -1.7320506530 |   4.1887902239
+ 5 |  -2.2031833089 |  -2.0839652451 |   6.2831919050
+ 6 |  -1.7031893246 |  -2.9499949689 |   3.1415996533
+ 7 |   1.6334481885 |   1.0974614127 |   6.9707747740
+ 8 |   2.9060794160 |   0.8660272558 |   2.0942250500
+ 9 |  -0.7031670469 |   1.2173508304 |   2.0943703155
+10 |  -0.7031890762 |   2.9500099502 |   6.2831852361
+11 |  -1.7031890249 |   1.2173908346 |   1.0471975778
+12 |  -0.7031890504 |  -2.9500032896 |   2.0944018094
+13 |  -1.7031889636 |   2.9500095915 |   5.2359877886
+14 |  -1.7031890119 |  -1.2179362777 |   3.1415992164
+15 |  -2.2031889846 |   3.8160349091 |   4.1887901831
+16 |   4.4063777610 |  -0.0000000876 |  -0.0000000196
+17 |  -2.2031888792 |   2.0839839012 |   2.0943952802
+18 |  -2.2031854485 |  -3.8160327528 |   2.0943947642
+19 |  -0.2031839312 |  -2.0839799280 |   5.2359944392
+20 |   0.6341412318 |   0.4513841446 |   1.5074879727
+21 |  -2.2031886757 |   0.3513654761 |   0.0000001366
+22 |  -0.7031890502 |  -1.2179574002 |   4.1887967251
+23 |   2.9063776861 |  -0.8660253665 |   6.2831854021
+24 |  -0.8122067708 |  -0.0002845006 |   5.2359602849
+25 |   0.7965520215 |   2.0838353882 |   6.2828909184
+26 |   0.5204527977 |  -0.5434164566 |   2.5546858461
+
+
