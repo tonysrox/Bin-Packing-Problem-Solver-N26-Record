@@ -1,5 +1,5 @@
 RECORD SUBMISSION: N=26 Triangles in Triangle
-Found by: [YOUR NAME]
+Found by: Joah-Frenzley
 Method: Basinhopping + L-BFGS-B (Numba Accelerated)
 Container Side Length (s): 5.406377802786
 --------------------------------------------------
